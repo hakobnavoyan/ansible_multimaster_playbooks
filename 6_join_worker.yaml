@@ -1,0 +1,16 @@
+- hosts: kube_node
+  become: yes
+  become_user: root
+  gather_facts: yes
+  
+  tasks:
+    - name: copy join command worker
+      ansible.builtin.copy:
+        src: /tmp/kubernetes_join_command_worker
+        dest: /tmp/kubernetes_join_command_worker
+        owner: root
+        group: root
+        mode: '0777'
+    - name: join worker node
+      shell: |
+             bash /tmp/kubernetes_join_command_worker
