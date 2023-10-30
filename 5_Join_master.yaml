@@ -1,0 +1,16 @@
+- hosts: kube_control_plane
+  become: yes
+  become_user: root
+  gather_facts: yes
+  
+  tasks:
+    - name: copy join command master
+      ansible.builtin.copy:
+        src: /tmp/kubernetes_join_command_master
+        dest: /tmp/kubernetes_join_command_master
+        owner: root
+        group: root
+        mode: '0777'
+    - name: join master node
+      shell: |
+             bash /tmp/kubernetes_join_command_master
