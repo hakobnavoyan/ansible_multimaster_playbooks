@@ -1,0 +1,29 @@
+all:
+  hosts:
+    node1:
+      ansible_host: 192.168.197.198
+      ip: 192.168.197.198
+      access_ip: 192.168.197.198
+    node2:
+      ansible_host: 192.168.197.199
+      ip: 192.168.197.199
+      access_ip: 192.168.197.199
+    node3:
+      ansible_host: 192.168.197.200
+      ip: 192.168.197.200
+      access_ip: 192.168.197.200
+    node4:
+      ansible_host: 192.168.197.201
+      ip: 192.168.197.201
+      access_ip: 192.168.197.201
+  children:
+    init_master:
+      hosts:
+        node1:
+    kube_control_plane:
+      hosts:
+        node2:
+    kube_node:
+      hosts:
+        node3:
+        node4:
