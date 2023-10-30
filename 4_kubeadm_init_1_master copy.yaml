@@ -1,0 +1,44 @@
+- hosts: kube_control_plane
+  become: yes
+  become_user: root
+  gather_facts: yes
+  
+  tasks:
+    - name: initialize the cluster
+      shell: sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.197.198 >> cluster_initialized.txt
+      args:
+        chdir: $HOME
+        creates: cluster_initialized.txt
+
+    - name: create .kube directory
+      become: yes
+      become_user: root
+      file:
+        path: /root/.kube
+        state: directory
+        mode: 0755
+
+    - name: copy admin.conf
+      copy:
+        remote_src: yes
+        src: /etc/kubernetes/admin.conf
+        dest: /root/.kube/config
+        owner: root
+
+    - name: Install calico Pod network
+      become: yes
+      become_user: root
+      shell:  kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/calico.yaml
+      args:
+        chdir: $HOME
+
+
+    - name: Get join token worker
+      become: yes
+      become_user: root
+      shell: sudo kubeadm token create  --print-join-command
+      register: kubernetes_join_command
+
+    - name: Copy join command to local file.
+      become: yes
+      local_action: copy content="{{ kubernetes_join_command.stdout_lines[0] }}" dest="/tmp/kubernetes_join_command_worker" mode=0777
