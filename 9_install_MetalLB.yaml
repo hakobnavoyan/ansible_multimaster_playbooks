@@ -1,0 +1,22 @@
+- hosts: init_master
+  become: yes
+  become_user: root
+  gather_facts: yes
+
+  tasks:
+    - name: copy Manifests
+      copy:
+        remote_src: false
+        src: /root/manifests/metallb_addresspool.yaml
+        dest: /root/metallb_addresspool.yaml
+        owner: root
+
+    - name: Install MetalLB
+      shell: |
+             kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.12/config/manifests/metallb-native.yaml
+    - name: sleep 2 minute
+      ansible.builtin.pause:
+        minutes: 2
+    - name: Install Metallb ipaddresspool
+      shell: |             
+             kubectl apply -f /root/metallb_addresspool.yaml
