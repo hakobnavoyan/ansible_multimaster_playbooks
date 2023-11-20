@@ -1,0 +1,9 @@
+- hosts: init_master
+  become: yes
+  become_user: root
+  gather_facts: yes
+  
+  tasks:
+  shell: |
+         kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.12/config/manifests/metallb-native.yaml
+         kubectl apply -f /root/manifests/metallb_addresspool.yaml
